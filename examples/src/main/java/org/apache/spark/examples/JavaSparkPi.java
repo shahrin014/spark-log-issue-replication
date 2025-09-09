@@ -24,13 +24,25 @@ import org.apache.spark.sql.SparkSession;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import java.net.InetAddress;
+
 /**
  * Computes an approximation to pi
  * Usage: JavaSparkPi [partitions]
  */
 public final class JavaSparkPi {
 
+  private static final Logger logger = Logger.getLogger(JavaSparkPi.class);
+
   public static void main(String[] args) throws Exception {
+
+    InetAddress localhostDriver = InetAddress.getLocalHost();
+    String ipAddressDriver = localhostDriver.getHostAddress();
+
+    logger.error("LOG in Driver IP Address: " + ipAddressDriver);
+    System.out.println("STOUT in Driver IP Address: " + ipAddressDriver);
+
     SparkSession spark = SparkSession
       .builder()
       .appName("JavaSparkPi")
@@ -48,6 +60,13 @@ public final class JavaSparkPi {
     JavaRDD<Integer> dataSet = jsc.parallelize(l, slices);
 
     int count = dataSet.map(integer -> {
+      
+      InetAddress localhostExecutor = InetAddress.getLocalHost();
+      String ipAddressExecutor = localhostExecutor.getHostAddress();
+
+      logger.error("LOG in Executor IP Address: " + ipAddressExecutor);
+      System.out.println("STOUT in Executor IP Address: " + ipAddressExecutor);
+      
       double x = Math.random() * 2 - 1;
       double y = Math.random() * 2 - 1;
       return (x * x + y * y <= 1) ? 1 : 0;
